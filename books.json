@@ -1,0 +1,38 @@
+[
+    {
+        "ISBN": "9781408855652",
+        "title": "Harry Potter and the Sorcerer's Stone",
+        "genre": "Fiction"
+    },
+    {
+        "ISBN": "9781408855669",
+        "title": "Harry Potter and the Chamber of Secrets",
+        "genre": "Fiction"
+    },
+    {
+        "ISBN": "9781781100516",
+        "title": "Harry Potter and the Prisoner of Azkaban",
+        "genre": "Fiction"
+    },
+    {
+        "ISBN": "9781982176860",
+        "title": "Steve Jobs",
+        "genre": "Biography"
+    },
+    {
+        "ISBN": "9780262032933",
+        "title": "Introduction To Algorithms",
+        "genre": "Other"
+    },
+    {
+        "id": "100",
+        "title": "Harry Potter and the Goblet of Fire",
+        "authors": "J. K. Rowling",
+        "ISBN": "9781338878950",
+        "publisher": "Scholastic",
+        "publishedDate": "2023-05-02",
+        "genre": "Fiction",
+        "language": "English",
+        "summary": "Harry Potter and the Goblet of Fire follows Harry's fourth year at Hogwarts, where he is unexpectedly chosen as a champion in the dangerous Triwizard Tournament. Despite being underage, Harry faces various challenges, including tasks designed to test his magical abilities. Meanwhile, tensions rise as dark forces stir, and Harry discovers that Voldemort's return is imminent. With the help of his friends and allies, Harry navigates through the tournament's perils and uncovers a plot involving betrayal and deception. Ultimately, Harry confronts Voldemort in a dramatic showdown, marking the beginning of a new chapter in the wizarding world's struggle against darkness."
+    }
+]

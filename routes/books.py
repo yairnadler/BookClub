@@ -26,10 +26,7 @@ def create_book():
     # Fetch book details from Google Books API
     book_info = fecth_details_googleAPI(isbn_num)
     if book_info:
-        # Fetch language information from OpenLibrary API using ISBN_13
-        languages = fetch_language_openLibraryAPI(isbn_num)
-        summary = summarize_book(book_title)
-        new_book, new_book_rating = create_new_book(book_info, book_id, book_title, isbn_num, book_genre, languages, summary)
+        new_book, new_book_rating = create_new_book(book_info, book_id, book_title, isbn_num, book_genre)
         books[int(book_id)] = new_book
         ratings[int(book_id)] = new_book_rating
 

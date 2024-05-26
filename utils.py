@@ -1,18 +1,13 @@
-from flask import Flask, jsonify, request
+from flask import jsonify
 import os
-from dotenv import load_dotenv
 import requests
-import google.generativeai as genai
-
-load_dotenv()
 
 REQUIRED_FIELDS = ["ISBN", "title", "genre"]
 GENRES = ['Fiction', 'Children', 'Biography', 'Science', 'Science Fiction', 'Fantasy', 'Other']
 GOOGLE_BOOKS_API_BASE_URL = "https://www.googleapis.com/books/v1/volumes"
 OPEN_LIBRARY_API_BASE_URL = "https://openlibrary.org/search.json"
 GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
-genai.configure(api_key=GEMINI_API_KEY)
-MODEL = genai.GenerativeModel('gemini-pro')
+
 
 def validate_post_json_data(request, books):
     book_data = request.get_json()
@@ -43,21 +38,7 @@ def fecth_details_googleAPI(isbn_num):
 
     return None
 
-def fetch_language_openLibraryAPI(isbn_num):
-    open_library_response = requests.get(f"{OPEN_LIBRARY_API_BASE_URL}?q=isbn:{isbn_num}&fields=language")
-    if open_library_response.status_code == 200:
-        open_library_data = open_library_response.json()
-        languages = [lang for doc in open_library_data['docs'] for lang in doc.get('language', ['missing'])]
-    else:
-        languages = ['missing']
-    
-    return languages
-
-def summarize_book(book_title):
-    summary = MODEL.generate_content("Write a 5 sentence summay of the book " + book_title).text
-    return summary
-
-def create_new_book(book_info, book_id, book_title, isbn_num, book_genre, languages, summary):
+def create_new_book(book_info, book_id, book_title, isbn_num, book_genre):
     # Turn authors list into a string
     authors = book_info.get('authors', [])
     if len(authors) > 1:
@@ -76,8 +57,6 @@ def create_new_book(book_info, book_id, book_title, isbn_num, book_genre, langua
         'publisher': book_info.get('publisher', ''),
         'publishedDate': book_info.get('publishedDate', ''),
         'genre': book_genre,
-        'language': languages,
-        'summary': summary
     }
 
     new_book_rating = {
@@ -92,20 +71,12 @@ def create_new_book(book_info, book_id, book_title, isbn_num, book_genre, langua
 def filter_books_query(query_params, books):
     filtered_books = [book for book in books.values()]
     query_fields = ['title', 'authors', 'ISBN', 'publisher', 'publishedDate', 'genre', 'id']
-    language_option = ['heb', 'eng', 'spa', 'chi']
 
     # Field based filtering
     for field in query_fields:
         field_query = query_params.get(f'{field}')
         if field_query:
             filtered_books = [book for book in filtered_books if book.get(field) == field_query]
-
-    # Language based filtering
-    lang_query = query_params.get('language')
-    if lang_query:
-        if lang_query not in language_option:
-            return [422, jsonify({'error': 'Invalid language option'})]
-        filtered_books = [book for book in filtered_books if lang_query in book.get('language', [])]
 
     return filtered_books
 
@@ -118,9 +89,7 @@ def update_book(book_json):
         'ISBN': book_json.get('ISBN'),
         'publisher': book_json.get('publisher'),
         'publishedDate': book_json.get('publishedDate'),
-        'genre': book_json.get('genre'),
-        'language': book_json.get('language'),
-        'summary': book_json.get('summary')
+        'genre': book_json.get('genre')
     }
 
     return updated_book

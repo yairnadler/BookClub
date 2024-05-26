@@ -1,0 +1,13 @@
+[
+    {
+        "memberName": "John Doe",
+        "ISBN": "9781408855652",
+        "loanDate": "2016-01-01"
+    },
+
+    {
+        "memberName": "John Doe",
+        "ISBN": "9781408855669",
+        "loanDate": "2016-01-01"
+    }
+]

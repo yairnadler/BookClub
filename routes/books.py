@@ -1,5 +1,4 @@
 from flask import Blueprint, jsonify, request
-import requests
 from utils import *
 
 bp = Blueprint('books', __name__)
@@ -15,7 +14,7 @@ def create_book():
     if request.content_type != 'application/json':
         return jsonify('error: Content-Type should be application/json'), 415
     # Validate the request JSON data
-    book_data, error_message = validate_post_json_data(request, books)
+    book_data, error_message = validate_post_books_json_data(request, books)
     if not book_data:
         return jsonify({'error': error_message}), 422
     # Extract book details from the request JSON data
@@ -42,8 +41,6 @@ def get_books():
         return jsonify(books)
     
     filtered_books = filter_books_query(query_params, books)
-    if filtered_books[0] == 422:
-        return filtered_books[1], 422
     
     return jsonify(filtered_books)
         

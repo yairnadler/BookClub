@@ -1,15 +1,13 @@
 from flask import jsonify
-import os
 import requests
 
 REQUIRED_FIELDS = ["ISBN", "title", "genre"]
 GENRES = ['Fiction', 'Children', 'Biography', 'Science', 'Science Fiction', 'Fantasy', 'Other']
 GOOGLE_BOOKS_API_BASE_URL = "https://www.googleapis.com/books/v1/volumes"
 OPEN_LIBRARY_API_BASE_URL = "https://openlibrary.org/search.json"
-GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
 
 
-def validate_post_json_data(request, books):
+def validate_post_books_json_data(request, books):
     book_data = request.get_json()
     book_title = book_data.get('title', '')
     if not book_title:
@@ -20,7 +18,7 @@ def validate_post_json_data(request, books):
     isbn_num = book_data.get('ISBN', '')
     if not isbn_num or len(isbn_num) != 13 or not isbn_num.isdigit():
         return None, 'error: ISBN is missing or invalid'
-    if int(isbn_num) in [book.get('ISBN') for book in books.values()]:
+    if isbn_num in [book.get('ISBN') for book in books.values()]:
         return None, 'error: Book with the provided ISBN already exists'
     
     return book_data, 'no error found'
@@ -109,4 +107,43 @@ def top_three_books(ratings):
 
     return top_ratings
 
+def validate_post_loans_data(request, books, loans):
+    print(books)
+    loan_data = request.get_json()
+    memberName = loan_data.get('memberName', '')
+    if not memberName:
+        return None, 'error: Member name is missing'
+    isbn_num = loan_data.get('ISBN', '')
+    if not isbn_num or len(isbn_num) != 13 or not isbn_num.isdigit():
+        return None, 'error: ISBN is missing or invalid'
+    if isbn_num not in [book.get('ISBN') for book in books.values()]:
+        return None, 'error: Book with the provided ISBN does not exist'
+    if isbn_num in [loan.get('loanID') for loan in loans.values()]:
+        return None, 'error: Book  is already on loan'
     
+    return loan_data, 'no error found'
+
+def create_new_loan(loan_data, book_id, title, loan_id):
+    new_loan = {
+        'memberName': loan_data.get('memberName'),
+        'ISBN': loan_data.get('ISBN'),
+        'title': title,
+        'bookID': book_id,
+        'loanDate': loan_data.get('loanDate'),
+        'loanID': loan_id
+    }
+
+    return new_loan
+
+def filter_loans_query(query_params, books):
+    filtered_loans = filter_books_query(query_params, books)
+    
+    return filtered_loans
+
+    # # Field based filtering
+    # for field in query_fields:
+    #     field_query = query_params.get(f'{field}')
+    #     if field_query:
+    #         filtered_loans = [loan for loan in filtered_loans if loan.get(field) == field_query]
+
+    # return filtered_loans
